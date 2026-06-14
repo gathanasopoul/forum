@@ -6,7 +6,7 @@ import (
 )
 
 // Register page
-func RegisterPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles(
 		"templates/register.html",

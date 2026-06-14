@@ -33,8 +33,9 @@ func main() {
 	fmt.Println("Database initialized")
 
 	// Routes
+	h := handlers.New(db)
 	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/register", handlers.RegisterPage)
+	http.HandleFunc("/register", h.RegisterPage)
 
 	fmt.Println("Server running on :8080")
 

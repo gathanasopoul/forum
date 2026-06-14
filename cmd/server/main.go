@@ -36,6 +36,8 @@ func main() {
 	h := handlers.New(db)
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/register", h.RegisterPage)
+	http.HandleFunc("/login", h.LoginPage)
+	http.HandleFunc("/logout", h.Logout)
 
 	fmt.Println("Server running on :8080")
 

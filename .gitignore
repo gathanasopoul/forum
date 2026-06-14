@@ -1,0 +1,9 @@
+# Database (local only)
+forum.db
+
+# Build output
+server
+*.exe
+
+# OS files
+.DS_Store

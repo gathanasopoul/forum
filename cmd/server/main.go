@@ -22,6 +22,13 @@ func main() {
 
 	fmt.Println("Database connected")
 
+	err = database.RunMigrations(db)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Database initialized")
+
 	http.HandleFunc("/", homeHandler)
 
 	fmt.Println("Server running on :8080")

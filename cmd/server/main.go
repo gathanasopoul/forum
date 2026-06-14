@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"forum/internal/database"
+	"forum/internal/handlers"
 )
 
 // Home route
@@ -14,6 +15,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	// Connect database
 	db, err := database.Connect()
 	if err != nil {
 		panic(err)
@@ -22,6 +24,7 @@ func main() {
 
 	fmt.Println("Database connected")
 
+	// Run migrations
 	err = database.RunMigrations(db)
 	if err != nil {
 		panic(err)
@@ -29,7 +32,9 @@ func main() {
 
 	fmt.Println("Database initialized")
 
+	// Routes
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/register", handlers.RegisterPage)
 
 	fmt.Println("Server running on :8080")
 

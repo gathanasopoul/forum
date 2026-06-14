@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"forum/internal/database"
 )
 
 // Home route
@@ -12,11 +14,19 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	db, err := database.Connect()
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	fmt.Println("Database connected")
+
 	http.HandleFunc("/", homeHandler)
 
 	fmt.Println("Server running on :8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println(err)
 	}

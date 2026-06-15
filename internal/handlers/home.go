@@ -11,6 +11,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var registerTemplatePaths = []string{
+	"templates/register.html",
+	"../../templates/register.html",
+}
+
+// registerPageData holds form values and validation errors for the register template.
+type registerPageData struct {
+	Username      string
+	Email         string
+	UsernameError string
+	EmailError    string
+	PasswordError string
+}
+
 // RegisterPage handles GET and POST requests to /register.
 // GET shows the registration form, POST creates a new user account.
 func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
@@ -19,20 +33,32 @@ func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles(
-		"templates/register.html",
-	)
+	h.renderRegisterPage(w, registerPageData{}, http.StatusOK)
+}
 
+// renderRegisterPage renders the register template with the given data and status code.
+func (h *Handlers) renderRegisterPage(w http.ResponseWriter, data registerPageData, status int) {
+	tmpl, err := parseRegisterTemplate()
 	if err != nil {
-		http.Error(
-			w,
-			"Template Error",
-			http.StatusInternalServerError,
-		)
+		http.Error(w, "Template Error", http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.Execute(w, nil)
+	w.WriteHeader(status)
+	tmpl.Execute(w, data)
+}
+
+// parseRegisterTemplate loads the register template from the project root or test path.
+func parseRegisterTemplate() (*template.Template, error) {
+	var lastErr error
+	for _, path := range registerTemplatePaths {
+		tmpl, err := template.ParseFiles(path)
+		if err == nil {
+			return tmpl, nil
+		}
+		lastErr = err
+	}
+	return nil, lastErr
 }
 
 // handleRegisterPost processes the registration form submission.
@@ -43,16 +69,22 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := r.FormValue("password")
 
+	data := registerPageData{
+		Username: username,
+		Email:    email,
+	}
+
 	if username == "" {
-		http.Error(w, "Username is required", http.StatusBadRequest)
-		return
+		data.UsernameError = "Username is required"
 	}
 	if email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
-		return
+		data.EmailError = "Email is required"
 	}
 	if password == "" {
-		http.Error(w, "Password is required", http.StatusBadRequest)
+		data.PasswordError = "Password is required"
+	}
+	if data.UsernameError != "" || data.EmailError != "" || data.PasswordError != "" {
+		h.renderRegisterPage(w, data, http.StatusBadRequest)
 		return
 	}
 
@@ -62,8 +94,7 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if existing != nil {
-		http.Error(w, "Username already taken", http.StatusBadRequest)
-		return
+		data.UsernameError = "Username already taken"
 	}
 
 	existing, err = services.GetUserByEmail(h.DB, email)
@@ -72,7 +103,11 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if existing != nil {
-		http.Error(w, "Email already taken", http.StatusBadRequest)
+		data.EmailError = "Email already taken"
+	}
+
+	if data.UsernameError != "" || data.EmailError != "" {
+		h.renderRegisterPage(w, data, http.StatusBadRequest)
 		return
 	}
 

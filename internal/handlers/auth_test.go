@@ -60,6 +60,9 @@ func TestRegisterPostEmptyEmail(t *testing.T) {
 	if !strings.Contains(rec.Body.String(), "Email is required") {
 		t.Errorf("body = %q, want email required message", rec.Body.String())
 	}
+	if !strings.Contains(rec.Body.String(), "Register</h1>") {
+		t.Error("expected register form to be re-rendered")
+	}
 }
 
 func TestRegisterPostDuplicateEmail(t *testing.T) {
@@ -94,6 +97,47 @@ func TestRegisterPostDuplicateEmail(t *testing.T) {
 	}
 	if !strings.Contains(rec.Body.String(), "Email already taken") {
 		t.Errorf("body = %q, want duplicate email message", rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), `value="newuser"`) {
+		t.Error("expected username value to be preserved in form")
+	}
+}
+
+func TestRegisterPostDuplicateUsernameAndEmail(t *testing.T) {
+	db := setupHandlerTestDB(t)
+	h := New(db)
+
+	hashed, err := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+	if err != nil {
+		t.Fatalf("hash password: %v", err)
+	}
+	if err := services.CreateUser(db, models.User{
+		Username: "salas",
+		Email:    "salas@gmail.com",
+		Password: string(hashed),
+	}); err != nil {
+		t.Fatalf("CreateUser: %v", err)
+	}
+
+	form := url.Values{}
+	form.Set("username", "salas")
+	form.Set("email", "salas@gmail.com")
+	form.Set("password", "password123")
+
+	req := httptest.NewRequest(http.MethodPost, "/register", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+
+	h.RegisterPage(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusBadRequest)
+	}
+	if !strings.Contains(rec.Body.String(), "Username already taken") {
+		t.Error("expected username already taken message")
+	}
+	if !strings.Contains(rec.Body.String(), "Email already taken") {
+		t.Error("expected email already taken message")
 	}
 }
 

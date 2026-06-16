@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{.Post.Title}}</title>
+</head>
+
+<body>
+    <h1>{{.Post.Title}}</h1>
+    <p>Posted by <strong>{{.Post.Username}}</strong> on {{.Post.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</p>
+    <p>Tags: <em>{{range .Post.Categories}}#{{.}} {{end}}</em></p>
+    <hr>
+    <p style="white-space: pre-line;">{{.Post.Content}}</p>
+    <hr>
+    <p><a href="/">Back to Home</a></p>
+</body>
+
+</html>

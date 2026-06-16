@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Forum Home</title>
+</head>
+
+<body>
+    <h1>Welcome to the Forum</h1>
+    {{if .UserID}}
+    <p><a href="/create-post">Create New Post</a> | <a href="/logout">Logout</a></p>
+    {{else}}
+    <p><a href="/login">Login</a> or <a href="/register">Register</a></p>
+    {{end}}
+
+    <hr>
+    <h2>All Posts</h2>
+    {{range .Posts}}
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <h3><a href="/post?id={{.ID}}">{{.Title}}</a></h3>
+        <p>Posted by <strong>{{.Username}}</strong> on {{.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</p>
+        <p>{{.Content}}</p>
+        <p>Tags: <em>{{range .Categories}}#{{.}} {{end}}</em></p>
+    </div>
+    {{else}}
+    <p>No posts yet. Be the first to write one!</p>
+    {{end}}
+</body>
+
+</html>

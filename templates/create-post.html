@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Post</title>
+</head>
+
+<body>
+    <h1>Create a New Post</h1>
+    <form action="/create-post" method="POST">
+        <div>
+            <input type="text" name="title" placeholder="Post Title" style="width: 100%; padding: 8px;" required>
+        </div>
+        <br>
+        <div>
+            <textarea name="content" placeholder="Write something..." rows="10" style="width: 100%; padding: 8px;"
+                required></textarea>
+        </div>
+        <br>
+        <div>
+            <p>Select Categories:</p>
+            {{range .Categories}}
+            <label>
+                <input type="checkbox" name="categories" value="{{.}}"> {{.}}
+            </label>&nbsp;&nbsp;
+            {{end}}
+        </div>
+        <br>
+        <button type="submit">Publish Post</button>
+    </form>
+    <p><a href="/">Back to Home</a></p>
+</body>
+
+</html>

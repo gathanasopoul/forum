@@ -8,10 +8,6 @@ import (
 	"forum/internal/handlers"
 )
 
-// Home route
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Forum Home")
-}
 
 func main() {
 
@@ -34,10 +30,12 @@ func main() {
 
 	// Routes
 	h := handlers.New(db)
-	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/", h.HomePage)
 	http.HandleFunc("/register", h.RegisterPage)
 	http.HandleFunc("/login", h.LoginPage)
 	http.HandleFunc("/logout", h.Logout)
+	http.HandleFunc("/create-post", h.CreatePostPage)
+	http.HandleFunc("/post", h.ViewPostPage)
 
 	fmt.Println("Server running on :8080")
 

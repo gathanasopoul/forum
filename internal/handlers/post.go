@@ -18,6 +18,7 @@ func (h *Handlers) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
+
 	if userID == 0 {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
@@ -29,11 +30,22 @@ func (h *Handlers) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Categories predefined for post options
-	categories := []string{"Go", "Web Development", "Databases", "General Talk"}
+	categories := []string{
+		"Go",
+		"Web Development",
+		"Databases",
+		"General Talk",
+	}
 
-	tmpl, err := template.ParseFiles("templates/create-post.html")
+	tmpl, err := template.ParseFiles(
+		"templates/create-post.html",
+	)
 	if err != nil {
-		http.Error(w, "Template Error", http.StatusInternalServerError)
+		http.Error(
+			w,
+			"Template Error",
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -42,19 +54,40 @@ func (h *Handlers) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *Handlers) handleCreatePostPost(w http.ResponseWriter, r *http.Request, userID int) {
-	title := strings.TrimSpace(r.FormValue("title"))
-	content := strings.TrimSpace(r.FormValue("content"))
-	
+// Handle create post form submission
+func (h *Handlers) handleCreatePostPost(
+	w http.ResponseWriter,
+	r *http.Request,
+	userID int,
+) {
+
+	title := strings.TrimSpace(
+		r.FormValue("title"),
+	)
+
+	content := strings.TrimSpace(
+		r.FormValue("content"),
+	)
+
 	r.ParseForm()
+
 	selectedCategories := r.Form["categories"]
 
 	if title == "" || content == "" {
-		http.Error(w, "Title and content are required", http.StatusBadRequest)
+		http.Error(
+			w,
+			"Title and content are required",
+			http.StatusBadRequest,
+		)
 		return
 	}
+
 	if len(selectedCategories) == 0 {
-		http.Error(w, "Please select at least one category", http.StatusBadRequest)
+		http.Error(
+			w,
+			"Please select at least one category",
+			http.StatusBadRequest,
+		)
 		return
 	}
 
@@ -64,44 +97,102 @@ func (h *Handlers) handleCreatePostPost(w http.ResponseWriter, r *http.Request, 
 		Content: content,
 	}
 
-	_, err := services.CreatePost(h.DB, post, selectedCategories)
+	_, err := services.CreatePost(
+		h.DB,
+		post,
+		selectedCategories,
+	)
 	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
+		http.Error(
+			w,
+			"Server error",
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(
+		w,
+		r,
+		"/",
+		http.StatusSeeOther,
+	)
 }
 
 // ViewPostPage handles displaying a single post by ID.
-func (h *Handlers) ViewPostPage(w http.ResponseWriter, r *http.Request) {
+func (h *Handlers) ViewPostPage(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+
 	idStr := r.URL.Query().Get("id")
+
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id <= 0 {
-		http.Error(w, "Invalid Post ID", http.StatusBadRequest)
+		http.Error(
+			w,
+			"Invalid Post ID",
+			http.StatusBadRequest,
+		)
 		return
 	}
 
-	post, err := services.GetPostByID(h.DB, id)
+	post, err := services.GetPostByID(
+		h.DB,
+		id,
+	)
 	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
+		http.Error(
+			w,
+			"Server error",
+			http.StatusInternalServerError,
+		)
 		return
 	}
+
 	if post == nil {
-		http.Error(w, "Post Not Found", http.StatusNotFound)
+		http.Error(
+			w,
+			"Post Not Found",
+			http.StatusNotFound,
+		)
 		return
 	}
 
-	userID, _ := auth.GetCurrentUserID(h.DB, r)
-
-	tmpl, err := template.ParseFiles("templates/post.html")
+	// Load comments for this post
+	comments, err := services.GetCommentsByPostID(
+		h.DB,
+		id,
+	)
 	if err != nil {
-		http.Error(w, "Template Error", http.StatusInternalServerError)
+		http.Error(
+			w,
+			"Server error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	userID, _ := auth.GetCurrentUserID(
+		h.DB,
+		r,
+	)
+
+	tmpl, err := template.ParseFiles(
+		"templates/post.html",
+	)
+	if err != nil {
+		http.Error(
+			w,
+			"Template Error",
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
 	tmpl.Execute(w, map[string]interface{}{
-		"Post":   post,
-		"UserID": userID,
+		"Post":     post,
+		"UserID":   userID,
+		"Comments": comments,
 	})
 }

@@ -73,9 +73,6 @@ Files:
 * internal/database/migrations.go
 * migrations/001_init.sql
 
-Owner:
-
-* Developer A
 
 ---
 
@@ -94,9 +91,6 @@ Files:
 * internal/models/user.go
 * internal/models/session.go
 
-Owner:
-
-* Developer B
 
 ---
 
@@ -114,10 +108,6 @@ Files:
 * internal/models/post.go
 * internal/services/post_service.go
 
-Owner:
-
-* Developer C
-
 ---
 
 ## Phase 4 - Comments
@@ -133,9 +123,6 @@ Files:
 * internal/models/comment.go
 * internal/services/comment_service.go
 
-Owner:
-
-* Developer A
 
 ---
 
@@ -154,9 +141,6 @@ Files:
 * internal/models/reaction.go
 * internal/services/reaction_service.go
 
-Owner:
-
-* Developer B
 
 ---
 
@@ -172,9 +156,6 @@ Files:
 
 * internal/handlers/filter.go
 
-Owner:
-
-* Developer C
 
 ---
 
@@ -202,9 +183,6 @@ Goal:
 * Dockerfile
 * docker-compose.yml
 
-Owner:
-
-* Developer A
 
 ---
 

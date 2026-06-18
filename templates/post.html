@@ -6,13 +6,104 @@
 </head>
 
 <body>
+
     <h1>{{.Post.Title}}</h1>
-    <p>Posted by <strong>{{.Post.Username}}</strong> on {{.Post.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</p>
-    <p>Tags: <em>{{range .Post.Categories}}#{{.}} {{end}}</em></p>
+
+    <p>
+        Posted by
+        <strong>{{.Post.Username}}</strong>
+        on
+        {{.Post.CreatedAt.Format "Jan 02, 2006 at 15:04"}}
+    </p>
+
+    <p>
+        Tags:
+        <em>
+            {{range .Post.Categories}}
+            #{{.}}
+            {{end}}
+        </em>
+    </p>
+
     <hr>
-    <p style="white-space: pre-line;">{{.Post.Content}}</p>
+
+    <p style="white-space: pre-line;">
+        {{.Post.Content}}
+    </p>
+
     <hr>
-    <p><a href="/">Back to Home</a></p>
+
+    <h2>Comments</h2>
+
+    {{if .Comments}}
+
+        {{range .Comments}}
+
+        <div style="margin-bottom:20px;">
+
+            <strong>{{.Username}}</strong>
+
+            <small>
+                ({{.CreatedAt.Format "Jan 02, 2006 at 15:04"}})
+            </small>
+
+            <p>{{.Content}}</p>
+
+        </div>
+
+        <hr>
+
+        {{end}}
+
+    {{else}}
+
+        <p>No comments yet.</p>
+
+    {{end}}
+
+    {{if .UserID}}
+
+    <h3>Add Comment</h3>
+
+    <form action="/comment/create" method="POST">
+
+        <input
+            type="hidden"
+            name="post_id"
+            value="{{.Post.ID}}"
+        >
+
+        <textarea
+            name="content"
+            rows="5"
+            cols="60"
+            placeholder="Write your comment..."
+            required
+        ></textarea>
+
+        <br><br>
+
+        <button type="submit">
+            Post Comment
+        </button>
+
+    </form>
+
+    {{else}}
+
+    <p>
+        <a href="/login">Login</a>
+        to write a comment.
+    </p>
+
+    {{end}}
+
+    <hr>
+
+    <p>
+        <a href="/">Back to Home</a>
+    </p>
+
 </body>
 
 </html>

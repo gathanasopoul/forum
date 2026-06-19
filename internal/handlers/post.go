@@ -164,6 +164,19 @@ func (h *Handlers) ViewPostPage(
 		h.DB,
 		id,
 	)
+
+	likes, dislikes, err := services.GetPostReactionCounts(
+		h.DB,
+		id,
+	)
+	if err != nil {
+		http.Error(
+			w,
+			"Server error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
 	if err != nil {
 		http.Error(
 			w,
@@ -194,5 +207,7 @@ func (h *Handlers) ViewPostPage(
 		"Post":     post,
 		"UserID":   userID,
 		"Comments": comments,
+		"Likes":    likes,
+		"Dislikes": dislikes,
 	})
 }

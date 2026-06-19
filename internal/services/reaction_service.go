@@ -100,3 +100,100 @@ func GetPostReactionCounts(
 
 	return likes, dislikes, nil
 }
+
+// AddCommentReaction creates or updates a comment reaction.
+func AddCommentReaction(
+	db *sql.DB,
+	userID int,
+	commentID int,
+	value int,
+) error {
+
+	var reactionID int
+
+	err := db.QueryRow(
+		`
+		SELECT id
+		FROM comment_reactions
+		WHERE user_id = ?
+		AND comment_id = ?
+		`,
+		userID,
+		commentID,
+	).Scan(&reactionID)
+
+	if err == sql.ErrNoRows {
+
+		_, err = db.Exec(
+			`
+			INSERT INTO comment_reactions (
+				user_id,
+				comment_id,
+				value
+			)
+			VALUES (?, ?, ?)
+			`,
+			userID,
+			commentID,
+			value,
+		)
+
+		return err
+	}
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(
+		`
+		UPDATE comment_reactions
+		SET value = ?
+		WHERE id = ?
+		`,
+		value,
+		reactionID,
+	)
+
+	return err
+}
+
+// GetCommentReactionCounts returns likes and dislikes for a comment.
+func GetCommentReactionCounts(
+	db *sql.DB,
+	commentID int,
+) (int, int, error) {
+
+	var likes int
+	var dislikes int
+
+	err := db.QueryRow(
+		`
+		SELECT COUNT(*)
+		FROM comment_reactions
+		WHERE comment_id = ?
+		AND value = 1
+		`,
+		commentID,
+	).Scan(&likes)
+
+	if err != nil {
+		return 0, 0, err
+	}
+
+	err = db.QueryRow(
+		`
+		SELECT COUNT(*)
+		FROM comment_reactions
+		WHERE comment_id = ?
+		AND value = -1
+		`,
+		commentID,
+	).Scan(&dislikes)
+
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return likes, dislikes, nil
+}

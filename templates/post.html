@@ -18,11 +18,13 @@
 
     <p>
         Tags:
-        <em>
-            {{range .Post.Categories}}
-            #{{.}}
-            {{end}}
-        </em>
+        <em>{{range .Post.Categories}}#{{.}} {{end}}</em>
+    </p>
+
+    <p>
+        👍 Likes: {{.Likes}}
+        &nbsp;&nbsp;
+        👎 Dislikes: {{.Dislikes}}
     </p>
 
     <hr>

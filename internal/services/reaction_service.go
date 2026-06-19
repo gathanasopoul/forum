@@ -30,3 +30,43 @@ func AddPostReaction(
 
 	return err
 }
+
+// GetPostReactionCounts returns likes and dislikes for a post.
+func GetPostReactionCounts(
+	db *sql.DB,
+	postID int,
+) (int, int, error) {
+
+	var likes int
+	var dislikes int
+
+	err := db.QueryRow(
+		`
+		SELECT COUNT(*)
+		FROM post_reactions
+		WHERE post_id = ?
+		AND value = 1
+		`,
+		postID,
+	).Scan(&likes)
+
+	if err != nil {
+		return 0, 0, err
+	}
+
+	err = db.QueryRow(
+		`
+		SELECT COUNT(*)
+		FROM post_reactions
+		WHERE post_id = ?
+		AND value = -1
+		`,
+		postID,
+	).Scan(&dislikes)
+
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return likes, dislikes, nil
+}

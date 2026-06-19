@@ -74,6 +74,17 @@ func GetCommentsByPostID(
 			return nil, err
 		}
 
+		likes, dislikes, err := GetCommentReactionCounts(
+			db,
+			c.ID,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		c.Likes = likes
+		c.Dislikes = dislikes
+
 		comments = append(comments, &c)
 	}
 

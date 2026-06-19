@@ -72,20 +72,69 @@
     {{if .Comments}}
 
         {{range .Comments}}
+<div style="margin-bottom:20px;">
 
-        <div style="margin-bottom:20px;">
+    <strong>{{.Username}}</strong>
 
-            <strong>{{.Username}}</strong>
+    <small>
+        ({{.CreatedAt.Format "Jan 02, 2006 at 15:04"}})
+    </small>
 
-            <small>
-                ({{.CreatedAt.Format "Jan 02, 2006 at 15:04"}})
-            </small>
+    <p>{{.Content}}</p>
 
-            <p>{{.Content}}</p>
+    <p>
+        👍 {{.Likes}}
+        &nbsp;&nbsp;
+        👎 {{.Dislikes}}
+    </p>
 
-        </div>
+    {{if $.UserID}}
 
-        <hr>
+    <form action="/comment/like" method="POST">
+
+        <input
+            type="hidden"
+            name="comment_id"
+            value="{{.ID}}"
+        >
+
+        <input
+            type="hidden"
+            name="post_id"
+            value="{{$.Post.ID}}"
+        >
+
+        <button type="submit">
+            👍 Like
+        </button>
+
+    </form>
+
+    <form action="/comment/dislike" method="POST">
+
+        <input
+            type="hidden"
+            name="comment_id"
+            value="{{.ID}}"
+        >
+
+        <input
+            type="hidden"
+            name="post_id"
+            value="{{$.Post.ID}}"
+        >
+
+        <button type="submit">
+            👎 Dislike
+        </button>
+
+    </form>
+
+    {{end}}
+
+</div>
+
+<hr>
 
         {{end}}
 

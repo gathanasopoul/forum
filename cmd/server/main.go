@@ -36,6 +36,7 @@ func main() {
 	http.HandleFunc("/create-post", h.CreatePostPage)
 	http.HandleFunc("/post", h.ViewPostPage)
 	http.HandleFunc("/comment/create", h.CreateComment)
+	http.HandleFunc("/like", h.LikePost)
 
 	fmt.Println("Server running on :8080")
 

@@ -43,6 +43,20 @@
 
 </form>
 
+<form action="/dislike" method="POST">
+
+    <input
+        type="hidden"
+        name="post_id"
+        value="{{.Post.ID}}"
+    >
+
+    <button type="submit">
+        👎 Dislike
+    </button>
+
+</form>
+
 {{end}}
 
     <hr>

@@ -75,23 +75,11 @@ func GetPostByID(db *sql.DB, id int) (*models.Post, error) {
 	}
 
 	// Fetch associated categories
-	rows, err := db.Query(`
-		SELECT c.name
-		FROM categories c
-		JOIN post_categories pc ON c.id = pc.category_id
-		WHERE pc.post_id = ?`, p.ID)
+	categories, err := loadCategoriesForPost(db, p.ID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var catName string
-		if err := rows.Scan(&catName); err != nil {
-			return nil, err
-		}
-		p.Categories = append(p.Categories, catName)
-	}
+	p.Categories = categories
 
 	return &p, nil
 }
@@ -104,41 +92,64 @@ func GetAllPosts(db *sql.DB) ([]*models.Post, error) {
 		JOIN users u ON p.user_id = u.id
 		ORDER BY p.created_at DESC`
 
-	rows, err := db.Query(query)
+	return queryPostsWithCategories(db, query)
+}
+
+// queryPostsWithCategories runs a post SELECT and attaches category names to each row.
+func queryPostsWithCategories(db *sql.DB, query string, args ...interface{}) ([]*models.Post, error) {
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*models.Post
+	for rows.Next() {
+		var p models.Post
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Username, &p.Title, &p.Content, &p.CreatedAt); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		posts = append(posts, &p)
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return nil, err
+	}
+	rows.Close()
+
+	for _, p := range posts {
+		categories, err := loadCategoriesForPost(db, p.ID)
+		if err != nil {
+			return nil, err
+		}
+		p.Categories = categories
+	}
+
+	return posts, nil
+}
+
+// loadCategoriesForPost returns the category names linked to a post.
+func loadCategoriesForPost(db *sql.DB, postID int) ([]string, error) {
+	rows, err := db.Query(`
+		SELECT c.name
+		FROM categories c
+		JOIN post_categories pc ON c.id = pc.category_id
+		WHERE pc.post_id = ?`, postID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var posts []*models.Post
+	var categories []string
 	for rows.Next() {
-		var p models.Post
-		err := rows.Scan(&p.ID, &p.UserID, &p.Username, &p.Title, &p.Content, &p.CreatedAt)
-		if err != nil {
+		var name string
+		if err := rows.Scan(&name); err != nil {
 			return nil, err
 		}
-
-		catRows, err := db.Query(`
-			SELECT c.name
-			FROM categories c
-			JOIN post_categories pc ON c.id = pc.category_id
-			WHERE pc.post_id = ?`, p.ID)
-		if err != nil {
-			return nil, err
-		}
-		for catRows.Next() {
-			var catName string
-			if err := catRows.Scan(&catName); err != nil {
-				catRows.Close()
-				return nil, err
-			}
-			p.Categories = append(p.Categories, catName)
-		}
-		catRows.Close()
-
-		posts = append(posts, &p)
+		categories = append(categories, name)
 	}
-	return posts, nil
+
+	return categories, nil
 }
 
 // GetAllCategories returns all registered category names.

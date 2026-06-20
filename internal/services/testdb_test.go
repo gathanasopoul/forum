@@ -12,10 +12,11 @@ import (
 func setupTestDB(t *testing.T) *sql.DB {
 	t.Helper()
 
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite3", "file:memdb1?mode=memory&cache=shared")
 	if err != nil {
 		t.Fatalf("open database: %v", err)
 	}
+	db.SetMaxOpenConns(1)
 
 	schema, err := os.ReadFile("../database/schema.sql")
 	if err != nil {

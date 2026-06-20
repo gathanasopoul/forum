@@ -26,7 +26,7 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 ### In Progress / TODO
 
 - Frontend templates and styling
-- Docker setup (Dockerfile, docker-compose.yml)
+- Unit tests
 
 ## Requirements
 
@@ -53,6 +53,24 @@ go run cmd/server/main.go
 ```
 
 The server starts at [http://localhost:8080](http://localhost:8080).
+
+## Docker
+
+Build and run with Docker Compose (from project root):
+
+```bash
+docker compose up --build
+```
+
+Open [http://localhost:8080](http://localhost:8080).
+
+Stop the container:
+
+```bash
+docker compose down
+```
+
+The SQLite database is created inside the container at `/app/forum.db`.
 
 ## Routes
 
@@ -93,6 +111,8 @@ sqlite3 forum.db "SELECT p.title, c.name FROM posts p JOIN post_categories pc ON
 ```
 forum/
 ├── cmd/server/          # Application entry point
+├── Dockerfile         # Container image build
+├── docker-compose.yml # Run forum with Docker Compose
 ├── internal/
 │   ├── auth/            # Cookie and session helpers
 │   ├── database/        # SQLite connection and migrations

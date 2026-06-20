@@ -101,7 +101,9 @@ func (h *Handlers) renderHomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl, err := template.New("home.html").Funcs(template.FuncMap{
-		"queryEscape": url.QueryEscape,
+		"categoryURL": func(name string) template.URL {
+			return template.URL("/?category=" + url.QueryEscape(name))
+		},
 	}).ParseFiles("templates/home.html")
 	if err != nil {
 		http.Error(w, "Template Error", http.StatusInternalServerError)

@@ -46,7 +46,7 @@
         {{if and (eq $.Filter.ActiveType "category") (eq $.Filter.Category .)}}
         <strong>#{{.}}</strong>
         {{else}}
-        <a href="/?category={{queryEscape .}}">#{{.}}</a>
+        <a href="{{categoryURL .}}">#{{.}}</a>
         {{end}}
         {{end}}
     </p>

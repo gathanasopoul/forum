@@ -71,7 +71,7 @@ Files:
 * cmd/server/main.go
 * internal/database/db.go
 * internal/database/migrations.go
-* migrations/001_init.sql
+* internal/database/schema.sql
 
 
 ---

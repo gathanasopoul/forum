@@ -77,7 +77,7 @@ The server starts at [http://localhost:8080](http://localhost:8080).
 
 SQLite database file: `forum.db` (created automatically on first run, local only).
 
-Schema is defined in `internal/database/schema.sql`.
+Schema is defined in `internal/database/schema.sql`. On startup, `RunMigrations()` in `internal/database/migrations.go` reads this file and creates the tables.
 
 Useful commands:
 

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	"forum/internal/auth"
 	"forum/internal/models"
 	"forum/internal/services"
 
@@ -132,33 +131,12 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-// HomePage renders the primary homepage listing all posts.
+// HomePage renders the primary homepage with optional post filters.
 func (h *Handlers) HomePage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
 	}
 
-	posts, err := services.GetAllPosts(h.DB)
-	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
-		return
-	}
-
-	userID, err := auth.GetCurrentUserID(h.DB, r)
-	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
-		return
-	}
-
-	tmpl, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		http.Error(w, "Template Error", http.StatusInternalServerError)
-		return
-	}
-
-	tmpl.Execute(w, map[string]interface{}{
-		"Posts":  posts,
-		"UserID": userID,
-	})
+	h.renderHomePage(w, r)
 }

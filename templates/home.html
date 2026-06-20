@@ -14,7 +14,47 @@
     {{end}}
 
     <hr>
-    <h2>All Posts</h2>
+
+    <h2>Filter Posts</h2>
+    <p>
+        {{if eq .Filter.ActiveType "all"}}
+        <strong>All Posts</strong>
+        {{else}}
+        <a href="/">All Posts</a>
+        {{end}}
+
+        {{if .UserID}}
+        |
+        {{if eq .Filter.ActiveType "mine"}}
+        <strong>My Posts</strong>
+        {{else}}
+        <a href="/?filter=mine">My Posts</a>
+        {{end}}
+        |
+        {{if eq .Filter.ActiveType "liked"}}
+        <strong>Liked Posts</strong>
+        {{else}}
+        <a href="/?filter=liked">Liked Posts</a>
+        {{end}}
+        {{end}}
+    </p>
+
+    {{if .Categories}}
+    <p>
+        Categories:
+        {{range .Categories}}
+        {{if and (eq $.Filter.ActiveType "category") (eq $.Filter.Category .)}}
+        <strong>#{{.}}</strong>
+        {{else}}
+        <a href="/?category={{queryEscape .}}">#{{.}}</a>
+        {{end}}
+        {{end}}
+    </p>
+    {{end}}
+
+    <hr>
+    <h2>{{.Filter.Label}}</h2>
+
     {{range .Posts}}
     <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
         <h3><a href="/post?id={{.ID}}">{{.Title}}</a></h3>
@@ -23,7 +63,7 @@
         <p>Tags: <em>{{range .Categories}}#{{.}} {{end}}</em></p>
     </div>
     {{else}}
-    <p>No posts yet. Be the first to write one!</p>
+    <p>No posts found for this filter.</p>
     {{end}}
 </body>
 

@@ -13,27 +13,26 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 ### Done
 
 - HTTP server with SQLite connection and database initialization
-- User registration (email, username, password)
-- Duplicate email validation
-- Password hashing with bcrypt
-- User login and logout
-- Session management with cookies (UUID token, 24h expiration)
-- Database schema for users, sessions, posts, comments, categories, and reactions
+- User registration (email, username, password) with duplicate validation
+- Password hashing with bcrypt and UUID session tokens
+- User login, logout, and session cookies (24h expiration)
+- Posts with categories (create, list, single post view)
+- Comments (create and display)
+- Likes and dislikes on posts and comments
+- Post filtering by category, created posts, and liked posts
+- Database schema for all forum entities
+- Unit tests for auth, posts, and filters
 
 ### In Progress / TODO
 
-- Posts and categories
-- Comments
-- Likes and dislikes
-- Post filtering (by category, created posts, liked posts)
 - Frontend templates and styling
-- Docker setup
-- Unit tests
+- Docker setup (Dockerfile, docker-compose.yml)
 
 ## Requirements
 
 - Go 1.25.3 or compatible
 - CGO enabled (required for SQLite)
+- SQLite CLI (`sqlite3`) — optional, useful for inspecting the database
 
 ## Setup
 
@@ -57,18 +56,26 @@ The server starts at [http://localhost:8080](http://localhost:8080).
 
 ## Routes
 
-| Method | Path       | Description              | Auth required |
-|--------|------------|--------------------------|---------------|
-| GET    | `/`        | Home page (placeholder)  | No            |
-| GET    | `/register`| Registration form        | No            |
-| POST   | `/register`| Create a new user        | No            |
-| GET    | `/login`   | Login form               | No            |
-| POST   | `/login`   | Authenticate user        | No            |
-| GET    | `/logout`  | End session and logout   | No            |
+| Method | Path | Description | Auth required |
+|--------|------|-------------|---------------|
+| GET | `/` | Home page with post list and filters | No |
+| GET | `/?category=Go` | Filter posts by category | No |
+| GET | `/?filter=mine` | Filter posts created by logged-in user | Yes |
+| GET | `/?filter=liked` | Filter posts liked by logged-in user | Yes |
+| GET/POST | `/register` | Registration form / create user | No |
+| GET/POST | `/login` | Login form / authenticate | No |
+| GET | `/logout` | End session and logout | No |
+| GET/POST | `/create-post` | Create a new post | Yes |
+| GET | `/post?id=1` | View a single post with comments | No |
+| POST | `/comment/create` | Add a comment to a post | Yes |
+| POST | `/like` | Like a post | Yes |
+| POST | `/dislike` | Dislike a post | Yes |
+| POST | `/comment/like` | Like a comment | Yes |
+| POST | `/comment/dislike` | Dislike a comment | Yes |
 
 ## Database
 
-SQLite database file: `forum.db` (created automatically on first run).
+SQLite database file: `forum.db` (created automatically on first run, local only).
 
 Schema is defined in `internal/database/schema.sql`.
 
@@ -77,7 +84,8 @@ Useful commands:
 ```bash
 sqlite3 forum.db ".tables"
 sqlite3 forum.db "SELECT username, email FROM users;"
-sqlite3 forum.db "SELECT user_id, token, expires_at FROM sessions;"
+sqlite3 forum.db "SELECT id, title FROM posts;"
+sqlite3 forum.db "SELECT p.title, c.name FROM posts p JOIN post_categories pc ON p.id = pc.post_id JOIN categories c ON c.id = pc.category_id;"
 ```
 
 ## Project Structure
@@ -92,7 +100,8 @@ forum/
 │   ├── models/          # Data models
 │   └── services/        # Database business logic
 ├── templates/           # HTML templates
-└── WORKFLOW.md          # Team git workflow and development phases
+├── WORKFLOW.md          # Team git workflow and development phases
+└── README.md
 ```
 
 ## Dependencies
@@ -104,3 +113,5 @@ forum/
 ## Git Workflow
 
 See [WORKFLOW.md](WORKFLOW.md) for branch naming, pull request process, and phase ownership.
+
+**Do not commit:** `forum.db` (local database), build binaries, or personal notes.

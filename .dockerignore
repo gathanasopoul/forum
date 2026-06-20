@@ -1,0 +1,9 @@
+forum.db
+forum.seed.db
+.git
+.gitignore
+LOCAL-DEV-GUIDE.md
+scripts/
+server
+*.exe
+.DS_Store

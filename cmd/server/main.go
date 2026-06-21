@@ -41,6 +41,9 @@ func main() {
 	http.HandleFunc("/comment/like", h.LikeComment)
 	http.HandleFunc("/comment/dislike", h.DislikeComment)
 
+	// Serve static files
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	fmt.Println("Server running on :8080")
 
 	err = http.ListenAndServe(":8080", nil)

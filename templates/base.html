@@ -1,0 +1,234 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('forum-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else {
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', systemPrefersDark ? 'dark' : 'light');
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01Forum</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="/" class="app-logo">
+                <div class="logo-text-group">
+                    <span class="logo-brand">Forum</span>
+                    <span class="logo-subbrand">Athens</span>
+                </div>
+                <svg class="logo-matrix" viewBox="0 0 72 76" width="34" height="36">
+                    <!-- Left side of 0 -->
+                    <circle cx="4" cy="4" r="3.2" class="dot-text" />
+                    <circle cx="4" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="4" cy="60" r="3.2" class="dot-accent" />
+
+                    <!-- Col 2 -->
+                    <circle cx="12" cy="4" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="12" cy="68" r="3.2" class="dot-accent" />
+
+                    <!-- Col 3 -->
+                    <circle cx="20" cy="4" r="3.2" class="dot-accent" />
+                    <circle cx="20" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="20" cy="60" r="3.2" class="dot-accent" />
+                    <circle cx="20" cy="68" r="3.2" class="dot-accent" />
+
+                    <!-- Col 4 -->
+                    <circle cx="28" cy="4" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="60" r="3.2" class="dot-accent" />
+                    <circle cx="28" cy="68" r="3.2" class="dot-accent" />
+
+                    <!-- Col 5 -->
+                    <circle cx="36" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="60" r="3.2" class="dot-accent" />
+                    <circle cx="36" cy="68" r="3.2" class="dot-accent" />
+
+                    <!-- 1 - Left offset -->
+                    <circle cx="48" cy="4" r="3.2" class="dot-accent" />
+
+                    <!-- 1 - Column 1 -->
+                    <circle cx="56" cy="4" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="56" cy="60" r="3.2" class="dot-accent" />
+
+                    <!-- 1 - Column 2 -->
+                    <circle cx="64" cy="12" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="20" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="28" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="36" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="44" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="52" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="60" r="3.2" class="dot-accent" />
+                    <circle cx="64" cy="68" r="3.2" class="dot-accent" />
+                </svg>
+            </a>
+
+            <div class="header-actions">
+                <!-- Theme Toggle Switch -->
+                <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                    <i class="fa-solid fa-moon moon-icon"></i>
+                    <i class="fa-solid fa-sun sun-icon"></i>
+                </button>
+
+                {{if .UserID}}
+                <a href="/create-post" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> <span>New Thread</span>
+                </a>
+                <a href="/logout" class="btn btn-secondary">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+                {{else}}
+                <a href="/login" class="btn btn-secondary">Login</a>
+                <a href="/register" class="btn btn-primary">Register</a>
+                {{end}}
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <div class="app-container">
+        <div class="app-layout">
+            <!-- Left Sidebar -->
+            <aside class="sidebar-left">
+                <div class="sidebar-card">
+                    <div class="nav-section">
+                        <h3 class="section-title">Navigation</h3>
+                        <a href="/" 
+                           class="nav-item {{if or (not .Filter) (eq .Filter.ActiveType "all")}}active{{end}}">
+                            <i class="fa-solid fa-align-left"></i> All Threads
+                        </a>
+                        {{if .UserID}}
+                        <a href="/?filter=mine" 
+                           class="nav-item {{if and .Filter (eq .Filter.ActiveType "mine")}}active{{end}}">
+                            <i class="fa-solid fa-user-pen"></i> My Threads
+                        </a>
+                        <a href="/?filter=liked" 
+                           class="nav-item {{if and .Filter (eq .Filter.ActiveType "liked")}}active{{end}}">
+                            <i class="fa-solid fa-heart"></i> Liked Threads
+                        </a>
+                        {{end}}
+                    </div>
+
+                    {{if .Categories}}
+                    <div class="nav-section categories-section">
+                        <h3 class="section-title">Categories</h3>
+                        <div class="category-list">
+                            {{range .Categories}}
+                            <a href="/?category={{.}}" 
+                               class="nav-item category-item {{if and $.Filter (eq $.Filter.ActiveType "category") (eq $.Filter.Category .)}}active{{end}}">
+                                <span class="category-hash">#</span> {{.}}
+                            </a>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                {{template "content" .}}
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside class="sidebar-right">
+                {{if .UserID}}
+                <div class="sidebar-card user-card">
+                    <div class="user-card-profile">
+                        <div class="avatar">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="welcome-text">Logged in</span>
+                            <span class="username">Active Member</span>
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <div class="sidebar-card promo-card">
+                    <h3>Join the Community</h3>
+                    <p>Sign up to participate in discussions, post your queries, and react to threads.</p>
+                    <a href="/register" class="btn btn-primary btn-full">Create Account</a>
+                </div>
+                {{end}}
+
+                <div class="sidebar-card rules-card">
+                    <h3>Community Rules</h3>
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Be respectful and helpful.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>No offensive or spam content.</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Categorize posts appropriately.</span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Forum01. Designed for zone01.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Module -->
+    <script src="/static/js/main.js"></script>
+</body>
+
+</html>
+{{end}}

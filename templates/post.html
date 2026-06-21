@@ -1,192 +1,147 @@
-<!DOCTYPE html>
-<html>
+{{define "content"}}
+<article class="thread-detail-card">
+    <header class="thread-card-header">
+        <div class="thread-user">
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-astronaut"></i>
+            </div>
+            <div class="user-meta">
+                <span class="thread-author">{{.Post.Username}}</span>
+                <span class="thread-date">Posted on {{.Post.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</span>
+            </div>
+        </div>
+        
+        {{if .Post.Categories}}
+            <div class="thread-badges">
+                {{range .Post.Categories}}
+                    <span class="badge">#{{.}}</span>
+                {{end}}
+            </div>
+        {{end}}
+    </header>
 
-<head>
-    <title>{{.Post.Title}}</title>
-</head>
+    <h1 class="thread-detail-title">{{.Post.Title}}</h1>
 
-<body>
-
-    <h1>{{.Post.Title}}</h1>
-
-    <p>
-        Posted by
-        <strong>{{.Post.Username}}</strong>
-        on
-        {{.Post.CreatedAt.Format "Jan 02, 2006 at 15:04"}}
-    </p>
-
-    <p>
-        Tags:
-        <em>{{range .Post.Categories}}#{{.}} {{end}}</em>
-    </p>
-
-    <p>
-        👍 Likes: {{.Likes}}
-        &nbsp;&nbsp;
-        👎 Dislikes: {{.Dislikes}}
-    </p>
-
-{{if .UserID}}
-
-<form action="/like" method="POST">
-
-    <input
-        type="hidden"
-        name="post_id"
-        value="{{.Post.ID}}"
-    >
-
-    <button type="submit">
-        👍 Like
-    </button>
-
-</form>
-
-<form action="/dislike" method="POST">
-
-    <input
-        type="hidden"
-        name="post_id"
-        value="{{.Post.ID}}"
-    >
-
-    <button type="submit">
-        👎 Dislike
-    </button>
-
-</form>
-
-{{end}}
-
-    <hr>
-
-    <p style="white-space: pre-line;">
+    <div class="thread-detail-content">
         {{.Post.Content}}
-    </p>
+    </div>
 
-    <hr>
+    <footer class="thread-detail-footer">
+        <div class="reaction-section">
+            {{if .UserID}}
+                <form action="/like" method="POST" class="reaction-form">
+                    <input type="hidden" name="post_id" value="{{.Post.ID}}">
+                    <button type="submit" class="btn btn-reaction btn-like" title="Like this post">
+                        <i class="fa-solid fa-thumbs-up"></i>
+                        <span class="reaction-count">{{.Likes}}</span>
+                    </button>
+                </form>
+                <form action="/dislike" method="POST" class="reaction-form">
+                    <input type="hidden" name="post_id" value="{{.Post.ID}}">
+                    <button type="submit" class="btn btn-reaction btn-dislike" title="Dislike this post">
+                        <i class="fa-solid fa-thumbs-down"></i>
+                        <span class="reaction-count">{{.Dislikes}}</span>
+                    </button>
+                </form>
+            {{else}}
+                <div class="btn btn-reaction disabled">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                    <span class="reaction-count">{{.Likes}}</span>
+                </div>
+                <div class="btn btn-reaction disabled">
+                    <i class="fa-regular fa-thumbs-down"></i>
+                    <span class="reaction-count">{{.Dislikes}}</span>
+                </div>
+            {{end}}
+        </div>
+    </footer>
+</article>
 
-    <h2>Comments</h2>
+<!-- Comments Container -->
+<section class="comments-section">
+    <h2 class="comments-section-title">
+        <i class="fa-regular fa-comments"></i> Discussion ({{if .Comments}}{{len .Comments}}{{else}}0{{end}})
+    </h2>
 
     {{if .Comments}}
-
-        {{range .Comments}}
-<div style="margin-bottom:20px;">
-
-    <strong>{{.Username}}</strong>
-
-    <small>
-        ({{.CreatedAt.Format "Jan 02, 2006 at 15:04"}})
-    </small>
-
-    <p>{{.Content}}</p>
-
-    <p>
-        👍 {{.Likes}}
-        &nbsp;&nbsp;
-        👎 {{.Dislikes}}
-    </p>
-
-    {{if $.UserID}}
-
-    <form action="/comment/like" method="POST">
-
-        <input
-            type="hidden"
-            name="comment_id"
-            value="{{.ID}}"
-        >
-
-        <input
-            type="hidden"
-            name="post_id"
-            value="{{$.Post.ID}}"
-        >
-
-        <button type="submit">
-            👍 Like
-        </button>
-
-    </form>
-
-    <form action="/comment/dislike" method="POST">
-
-        <input
-            type="hidden"
-            name="comment_id"
-            value="{{.ID}}"
-        >
-
-        <input
-            type="hidden"
-            name="post_id"
-            value="{{$.Post.ID}}"
-        >
-
-        <button type="submit">
-            👎 Dislike
-        </button>
-
-    </form>
-
+        <div class="comments-list">
+            {{range .Comments}}
+                <div class="comment-card">
+                    <div class="comment-card-header">
+                        <div class="comment-user">
+                            <div class="user-avatar-sm">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <div class="user-meta">
+                                <span class="comment-author">{{.Username}}</span>
+                                <span class="comment-date">{{.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-body">
+                        {{.Content}}
+                    </div>
+                    <div class="comment-footer">
+                        <div class="reaction-section">
+                            {{if $.UserID}}
+                                <form action="/comment/like" method="POST" class="reaction-form">
+                                    <input type="hidden" name="comment_id" value="{{.ID}}">
+                                    <input type="hidden" name="post_id" value="{{$.Post.ID}}">
+                                    <button type="submit" class="btn btn-reaction btn-like btn-sm" title="Like comment">
+                                        <i class="fa-solid fa-thumbs-up"></i>
+                                        <span class="reaction-count">{{.Likes}}</span>
+                                    </button>
+                                </form>
+                                <form action="/comment/dislike" method="POST" class="reaction-form">
+                                    <input type="hidden" name="comment_id" value="{{.ID}}">
+                                    <input type="hidden" name="post_id" value="{{$.Post.ID}}">
+                                    <button type="submit" class="btn btn-reaction btn-dislike btn-sm" title="Dislike comment">
+                                        <i class="fa-solid fa-thumbs-down"></i>
+                                        <span class="reaction-count">{{.Dislikes}}</span>
+                                    </button>
+                                </form>
+                            {{else}}
+                                <div class="btn btn-reaction disabled btn-sm">
+                                    <i class="fa-regular fa-thumbs-up"></i>
+                                    <span class="reaction-count">{{.Likes}}</span>
+                                </div>
+                                <div class="btn btn-reaction disabled btn-sm">
+                                    <i class="fa-regular fa-thumbs-down"></i>
+                                    <span class="reaction-count">{{.Dislikes}}</span>
+                                </div>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            {{end}}
+        </div>
+    {{else}}
+        <div class="empty-state comment-empty">
+            <p>No comments on this post yet. Start the conversation!</p>
+        </div>
     {{end}}
 
-</div>
-
-<hr>
-
+    <!-- Add Comment Box -->
+    <div class="add-comment-container">
+        {{if .UserID}}
+            <h3 class="add-comment-title"><i class="fa-regular fa-pen-to-square"></i> Add a Comment</h3>
+            <form action="/comment/create" method="POST" class="comment-form">
+                <input type="hidden" name="post_id" value="{{.Post.ID}}">
+                <div class="form-group">
+                    <textarea name="content" rows="4" placeholder="What are your thoughts on this topic?" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-reply"></i> Submit Comment
+                    </button>
+                </div>
+            </form>
+        {{else}}
+            <div class="login-prompt-card">
+                <i class="fa-solid fa-circle-question prompt-icon"></i>
+                <p>Want to join the discussion? <a href="/login">Log in</a> to write a comment.</p>
+            </div>
         {{end}}
-
-    {{else}}
-
-        <p>No comments yet.</p>
-
-    {{end}}
-
-    {{if .UserID}}
-
-    <h3>Add Comment</h3>
-
-    <form action="/comment/create" method="POST">
-
-        <input
-            type="hidden"
-            name="post_id"
-            value="{{.Post.ID}}"
-        >
-
-        <textarea
-            name="content"
-            rows="5"
-            cols="60"
-            placeholder="Write your comment..."
-            required
-        ></textarea>
-
-        <br><br>
-
-        <button type="submit">
-            Post Comment
-        </button>
-
-    </form>
-
-    {{else}}
-
-    <p>
-        <a href="/login">Login</a>
-        to write a comment.
-    </p>
-
-    {{end}}
-
-    <hr>
-
-    <p>
-        <a href="/">Back to Home</a>
-    </p>
-
-</body>
-
-</html>
+    </div>
+</section>
+{{end}}

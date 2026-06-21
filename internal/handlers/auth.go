@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -19,12 +18,12 @@ func (h *Handlers) LoginPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/login.html")
+	tmpl, err := parseTemplateWithBase("login.html", nil)
 	if err != nil {
 		http.Error(w, "Template Error", http.StatusInternalServerError)
 		return
 	}
-	tmpl.Execute(w, nil)
+	tmpl.ExecuteTemplate(w, "base", nil)
 }
 
 // handleLoginPost processes the login form submission.

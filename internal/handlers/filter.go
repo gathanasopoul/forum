@@ -100,11 +100,11 @@ func (h *Handlers) renderHomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.New("home.html").Funcs(template.FuncMap{
+	tmpl, err := parseTemplateWithBase("home.html", template.FuncMap{
 		"categoryURL": func(name string) template.URL {
 			return template.URL("/?category=" + url.QueryEscape(name))
 		},
-	}).ParseFiles("templates/home.html")
+	})
 	if err != nil {
 		http.Error(w, "Template Error", http.StatusInternalServerError)
 		return
@@ -117,5 +117,5 @@ func (h *Handlers) renderHomePage(w http.ResponseWriter, r *http.Request) {
 		Filter:     filter,
 	}
 
-	tmpl.Execute(w, data)
+	tmpl.ExecuteTemplate(w, "base", data)
 }

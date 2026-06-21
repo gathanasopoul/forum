@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
@@ -37,9 +36,7 @@ func (h *Handlers) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 		"General Talk",
 	}
 
-	tmpl, err := template.ParseFiles(
-		"templates/create-post.html",
-	)
+	tmpl, err := parseTemplateWithBase("create-post.html", nil)
 	if err != nil {
 		http.Error(
 			w,
@@ -49,8 +46,9 @@ func (h *Handlers) CreatePostPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, map[string]interface{}{
+	tmpl.ExecuteTemplate(w, "base", map[string]interface{}{
 		"Categories": categories,
+		"UserID":     userID,
 	})
 }
 
@@ -191,9 +189,7 @@ func (h *Handlers) ViewPostPage(
 		r,
 	)
 
-	tmpl, err := template.ParseFiles(
-		"templates/post.html",
-	)
+	tmpl, err := parseTemplateWithBase("post.html", nil)
 	if err != nil {
 		http.Error(
 			w,
@@ -203,7 +199,7 @@ func (h *Handlers) ViewPostPage(
 		return
 	}
 
-	tmpl.Execute(w, map[string]interface{}{
+	tmpl.ExecuteTemplate(w, "base", map[string]interface{}{
 		"Post":     post,
 		"UserID":   userID,
 		"Comments": comments,

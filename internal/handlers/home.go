@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -10,11 +9,6 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-var registerTemplatePaths = []string{
-	"templates/register.html",
-	"../../templates/register.html",
-}
 
 // registerPageData holds form values and validation errors for the register template.
 type registerPageData struct {
@@ -27,6 +21,7 @@ type registerPageData struct {
 
 // RegisterPage handles GET and POST requests to /register.
 // GET shows the registration form, POST creates a new user account.
+// registerPageData holds form values and validation errors for the register template.
 func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		h.handleRegisterPost(w, r)
@@ -38,27 +33,17 @@ func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 
 // renderRegisterPage renders the register template with the given data and status code.
 func (h *Handlers) renderRegisterPage(w http.ResponseWriter, data registerPageData, status int) {
-	tmpl, err := parseRegisterTemplate()
+	tmpl, err := parseTemplateWithBase("register.html", nil)
 	if err != nil {
 		http.Error(w, "Template Error", http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(status)
-	tmpl.Execute(w, data)
-}
-
-// parseRegisterTemplate loads the register template from the project root or test path.
-func parseRegisterTemplate() (*template.Template, error) {
-	var lastErr error
-	for _, path := range registerTemplatePaths {
-		tmpl, err := template.ParseFiles(path)
-		if err == nil {
-			return tmpl, nil
-		}
-		lastErr = err
-	}
-	return nil, lastErr
+	tmpl.ExecuteTemplate(w, "base", map[string]interface{}{
+		"UserID": 0,
+		"Form":   data,
+	})
 }
 
 // handleRegisterPost processes the registration form submission.

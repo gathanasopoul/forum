@@ -1,40 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-    <style>
-        .error {
-            color: red;
-            margin: 4px 0 0 0;
-        }
-    </style>
-</head>
-<body>
+{{define "content"}}
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="form-title">Create Account</h2>
+        <p class="form-subtitle">Join the developer community today</p>
 
-<h1>Register</h1>
+        <form action="/register" method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="username"><i class="fa-regular fa-user"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" value="{{if .Form}}{{.Form.Username}}{{end}}" required autofocus>
+                {{if and .Form .Form.UsernameError}}
+                    <span class="error-msg"><i class="fa-solid fa-triangle-exclamation"></i> {{.Form.UsernameError}}</span>
+                {{end}}
+            </div>
 
-<form action="/register" method="POST">
+            <div class="form-group">
+                <label for="email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" value="{{if .Form}}{{.Form.Email}}{{end}}" required>
+                {{if and .Form .Form.EmailError}}
+                    <span class="error-msg"><i class="fa-solid fa-triangle-exclamation"></i> {{.Form.EmailError}}</span>
+                {{end}}
+            </div>
 
-    <input type="text" name="username" placeholder="Username" value="{{.Username}}" required>
-    {{if .UsernameError}}<p class="error">{{.UsernameError}}</p>{{end}}
+            <div class="form-group">
+                <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="Choose a secure password" required>
+                {{if and .Form .Form.PasswordError}}
+                    <span class="error-msg"><i class="fa-solid fa-triangle-exclamation"></i> {{.Form.PasswordError}}</span>
+                {{end}}
+            </div>
 
-    <br><br>
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fa-solid fa-user-plus"></i> Register
+            </button>
+        </form>
 
-    <input type="email" name="email" placeholder="Email" value="{{.Email}}" required>
-    {{if .EmailError}}<p class="error">{{.EmailError}}</p>{{end}}
-
-    <br><br>
-
-    <input type="password" name="password" placeholder="Password" required>
-    {{if .PasswordError}}<p class="error">{{.PasswordError}}</p>{{end}}
-
-    <br><br>
-
-    <button type="submit">Register</button>
-
-</form>
-
-<p>Already have an account? <a href="/login">Login</a></p>
-
-</body>
-</html>
+        <p class="form-footer-link">Already have an account? <a href="/login">Login here</a></p>
+    </div>
+</div>
+{{end}}

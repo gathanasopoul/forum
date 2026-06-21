@@ -1,70 +1,48 @@
-<!DOCTYPE html>
-<html>
+{{define "content"}}
+<div class="content-header">
+    <h2 class="content-title">{{.Filter.Label}}</h2>
+</div>
 
-<head>
-    <title>Forum Home</title>
-</head>
-
-<body>
-    <h1>Welcome to the Forum</h1>
-    {{if .UserID}}
-    <p><a href="/create-post">Create New Post</a> | <a href="/logout">Logout</a></p>
-    {{else}}
-    <p><a href="/login">Login</a> or <a href="/register">Register</a></p>
-    {{end}}
-
-    <hr>
-
-    <h2>Filter Posts</h2>
-    <p>
-        {{if eq .Filter.ActiveType "all"}}
-        <strong>All Posts</strong>
-        {{else}}
-        <a href="/">All Posts</a>
-        {{end}}
-
-        {{if .UserID}}
-        |
-        {{if eq .Filter.ActiveType "mine"}}
-        <strong>My Posts</strong>
-        {{else}}
-        <a href="/?filter=mine">My Posts</a>
-        {{end}}
-        |
-        {{if eq .Filter.ActiveType "liked"}}
-        <strong>Liked Posts</strong>
-        {{else}}
-        <a href="/?filter=liked">Liked Posts</a>
-        {{end}}
-        {{end}}
-    </p>
-
-    {{if .Categories}}
-    <p>
-        Categories:
-        {{range .Categories}}
-        {{if and (eq $.Filter.ActiveType "category") (eq $.Filter.Category .)}}
-        <strong>#{{.}}</strong>
-        {{else}}
-        <a href="{{categoryURL .}}">#{{.}}</a>
-        {{end}}
-        {{end}}
-    </p>
-    {{end}}
-
-    <hr>
-    <h2>{{.Filter.Label}}</h2>
-
+<div class="thread-list">
     {{range .Posts}}
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-        <h3><a href="/post?id={{.ID}}">{{.Title}}</a></h3>
-        <p>Posted by <strong>{{.Username}}</strong> on {{.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</p>
-        <p>{{.Content}}</p>
-        <p>Tags: <em>{{range .Categories}}#{{.}} {{end}}</em></p>
-    </div>
+        <article class="thread-card">
+            <div class="thread-card-header">
+                <div class="thread-user">
+                    <div class="user-avatar-sm">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="user-meta">
+                        <span class="thread-author">{{.Username}}</span>
+                        <span class="thread-date">{{.CreatedAt.Format "Jan 02, 2006 at 15:04"}}</span>
+                    </div>
+                </div>
+                
+                {{if .Categories}}
+                    <div class="thread-badges">
+                        {{range .Categories}}
+                            <span class="badge">#{{.}}</span>
+                        {{end}}
+                    </div>
+                {{end}}
+            </div>
+            
+            <h3 class="thread-title">
+                <a href="/post?id={{.ID}}">{{.Title}}</a>
+            </h3>
+            
+            <p class="thread-excerpt">{{.Content}}</p>
+            
+            <div class="thread-footer">
+                <a href="/post?id={{.ID}}" class="btn-text">
+                    <i class="fa-regular fa-comments"></i> View Details & Comments
+                </a>
+            </div>
+        </article>
     {{else}}
-    <p>No posts found for this filter.</p>
+        <div class="empty-state">
+            <i class="fa-regular fa-folder-open empty-icon"></i>
+            <p>No threads found for this filter. Be the first to start one!</p>
+        </div>
     {{end}}
-</body>
-
-</html>
+</div>
+{{end}}

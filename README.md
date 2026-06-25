@@ -20,19 +20,21 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 - Comments (create and display)
 - Likes and dislikes on posts and comments
 - Post filtering by category, created posts, and liked posts
+- Responsive UI with light/dark theme and static assets
+- Docker setup (Dockerfile, docker-compose.yml)
 - Database schema for all forum entities
 - Unit tests for auth, posts, and filters
 
 ### In Progress / TODO
 
-- Frontend templates and styling
-- Unit tests
+- Unit tests (broader coverage)
 
 ## Requirements
 
 - Go 1.25.3 or compatible
 - CGO enabled (required for SQLite)
 - SQLite CLI (`sqlite3`) — optional, useful for inspecting the database
+- Docker Desktop — optional, required only for `docker compose up --build`
 
 ## Setup
 
@@ -120,6 +122,7 @@ forum/
 │   ├── models/          # Data models
 │   └── services/        # Database business logic
 ├── templates/           # HTML templates
+├── static/              # CSS and JavaScript assets
 ├── WORKFLOW.md          # Team git workflow and development phases
 └── README.md
 ```

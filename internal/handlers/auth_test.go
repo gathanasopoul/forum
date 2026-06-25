@@ -60,7 +60,7 @@ func TestRegisterPostEmptyEmail(t *testing.T) {
 	if !strings.Contains(rec.Body.String(), "Email is required") {
 		t.Errorf("body = %q, want email required message", rec.Body.String())
 	}
-	if !strings.Contains(rec.Body.String(), "Register</h1>") {
+	if !strings.Contains(rec.Body.String(), `action="/register"`) {
 		t.Error("expected register form to be re-rendered")
 	}
 }

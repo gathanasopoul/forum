@@ -28,6 +28,7 @@ WORKDIR /app
 COPY --from=builder /app/server .
 COPY --from=builder /app/internal/database/schema.sql internal/database/schema.sql
 COPY --from=builder /app/templates templates
+COPY --from=builder /app/static static
 
 EXPOSE 8080
 

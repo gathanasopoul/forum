@@ -46,6 +46,13 @@ cd forum
 go mod download
 ```
 
+## Environment Variables
+
+This project uses OAuth for authentication (GitHub). Before running the server, you must configure your environment variables:
+
+1. Create a `.env` file by copying the template: `cp .env.example .env`
+2. Open `.env` and replace the placeholder values with your actual GitHub OAuth credentials.
+
 ## Run
 
 From the project root:

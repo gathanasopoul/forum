@@ -13,9 +13,11 @@ func CreateUser(db *sql.DB, user models.User) error {
 	INSERT INTO users (
 		username,
 		email,
-		password
+		password,
+		oauth_provider,
+		oauth_id
 	)
-	VALUES (?, ?, ?)
+	VALUES (?, ?, ?, ?, ?)
 	`
 
 	_, err := db.Exec(
@@ -23,6 +25,8 @@ func CreateUser(db *sql.DB, user models.User) error {
 		user.Username,
 		user.Email,
 		user.Password,
+		user.OAuthProvider,
+		user.OAuthID,
 	)
 
 	return err
@@ -31,12 +35,12 @@ func CreateUser(db *sql.DB, user models.User) error {
 // GetUserByEmail finds a user by email address.
 // Returns nil if no user exists with that email.
 func GetUserByEmail(db *sql.DB, email string) (*models.User, error) {
-	query := `SELECT id, username, email, password, created_at FROM users WHERE email = ?`
+	query := `SELECT id, username, email, password, oauth_provider, oauth_id, created_at FROM users WHERE email = ?`
 
 	row := db.QueryRow(query, email)
 
 	var user models.User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.OAuthProvider, &user.OAuthID, &user.CreatedAt)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -49,12 +53,12 @@ func GetUserByEmail(db *sql.DB, email string) (*models.User, error) {
 // GetUserByUsername finds a user by username.
 // Returns nil if no user exists with that username.
 func GetUserByUsername(db *sql.DB, username string) (*models.User, error) {
-	query := `SELECT id, username, email, password, created_at FROM users WHERE username = ?`
+	query := `SELECT id, username, email, password, oauth_provider, oauth_id, created_at FROM users WHERE username = ?`
 
 	row := db.QueryRow(query, username)
 
 	var user models.User
-	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.CreatedAt)
+	err := row.Scan(&user.ID, &user.Username, &user.Email, &user.Password, &user.OAuthProvider, &user.OAuthID, &user.CreatedAt)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}

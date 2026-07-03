@@ -27,12 +27,20 @@ func main() {
 
 	fmt.Println("Database initialized")
 
+	// Initialize OAuth configurations
+	handlers.InitOAuth()
+
 	// Routes
 	h := handlers.New(db)
 	http.HandleFunc("/", h.HomePage)
 	http.HandleFunc("/register", h.RegisterPage)
 	http.HandleFunc("/login", h.LoginPage)
 	http.HandleFunc("/logout", h.Logout)
+	
+	// OAuth Routes
+	http.HandleFunc("/auth/github/login", h.OAuthLogin)
+	http.HandleFunc("/auth/github/callback", h.OAuthCallback)
+
 	http.HandleFunc("/create-post", h.CreatePostPage)
 	http.HandleFunc("/post", h.ViewPostPage)
 	http.HandleFunc("/comment/create", h.CreateComment)

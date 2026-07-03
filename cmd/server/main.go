@@ -2,13 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"forum/internal/database"
 	"forum/internal/handlers"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load environment variables from .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found, continuing with existing environment variables")
+	}
 
 	// Connect database
 	db, err := database.Connect()

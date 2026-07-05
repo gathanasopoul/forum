@@ -12,31 +12,14 @@ import (
 // It generates a UUID token, stores it in the database, and returns the token.
 // Sessions expire after 24 hours.
 func CreateSession(db *sql.DB, userID int) (string, error) {
-
 	token := uuid.New().String()
 	expiresAt := time.Now().Add(24 * time.Hour)
 
-	// Remove any previous sessions for this user
-	_, err := db.Exec(
-		`DELETE FROM sessions WHERE user_id = ?`,
-		userID,
-	)
+	query := `INSERT INTO sessions (user_id, token, expires_at) VALUES (?, ?, ?)`
+	_, err := db.Exec(query, userID, token, expiresAt)
 	if err != nil {
 		return "", err
 	}
-
-	// Create the new session
-	_, err = db.Exec(
-		`INSERT INTO sessions (user_id, token, expires_at)
-		 VALUES (?, ?, ?)`,
-		userID,
-		token,
-		expiresAt,
-	)
-	if err != nil {
-		return "", err
-	}
-
 	return token, nil
 }
 

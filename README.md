@@ -23,10 +23,11 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 - Responsive UI with light/dark theme and static assets
 - Docker setup (Dockerfile, docker-compose.yml)
 - Database schema for all forum entities
-- Unit tests for auth, posts, and filters
+- Unit tests for auth, posts, comments, and filters
 
 ### In Progress / TODO
 
+- GitHub OAuth (optional sign-in; requires `.env` credentials)
 - Unit tests (broader coverage)
 
 ## Requirements
@@ -34,7 +35,7 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 - Go 1.25.3 or compatible
 - CGO enabled (required for SQLite)
 - SQLite CLI (`sqlite3`) — optional, useful for inspecting the database
-- Docker Desktop — optional, required only for `docker compose up --build`
+- Docker — optional, for running the app in a container
 
 ## Setup
 
@@ -46,12 +47,25 @@ cd forum
 go mod download
 ```
 
+## Authentication
+
+The forum supports **email/password** registration and login out of the box. No environment file is required for this flow.
+
+**GitHub OAuth** is optional. To enable it, copy `.env.example` to `.env` and add your GitHub OAuth app credentials (see [Environment Variables](#environment-variables)).
+
 ## Environment Variables
 
-This project uses OAuth for authentication (GitHub). Before running the server, you must configure your environment variables:
+Only needed for **GitHub OAuth**. Email/password auth works without a `.env` file.
 
-1. Create a `.env` file by copying the template: `cp .env.example .env`
-2. Open `.env` and replace the placeholder values with your actual GitHub OAuth credentials.
+1. Copy the template: `cp .env.example .env`
+2. Set your GitHub OAuth app values in `.env`:
+
+```env
+GITHUB_CLIENT_ID=your_client_id
+GITHUB_CLIENT_SECRET=your_client_secret
+```
+
+If `.env` is missing, the server still starts and email/password authentication works normally.
 
 ## Run
 
@@ -65,7 +79,9 @@ The server starts at [http://localhost:8080](http://localhost:8080).
 
 ## Docker
 
-Build and run with Docker Compose (from project root):
+### Docker Compose (recommended)
+
+Build and run from the project root:
 
 ```bash
 docker compose up --build
@@ -79,7 +95,27 @@ Stop the container:
 docker compose down
 ```
 
-The SQLite database is created inside the container at `/app/forum.db`.
+### Manual build and run
+
+```bash
+docker build -t forum .
+docker run -d -p 8080:8080 --name forum forum
+docker ps -a
+```
+
+Stop and remove:
+
+```bash
+docker stop forum && docker rm forum
+```
+
+The SQLite database is created inside the container at `/app/forum.db`. Without a volume, data is reset when the container is removed.
+
+Inspect the database inside the container:
+
+```bash
+docker exec -it forum sqlite3 /app/forum.db "SELECT * FROM users;"
+```
 
 ## Routes
 
@@ -90,8 +126,10 @@ The SQLite database is created inside the container at `/app/forum.db`.
 | GET | `/?filter=mine` | Filter posts created by logged-in user | Yes |
 | GET | `/?filter=liked` | Filter posts liked by logged-in user | Yes |
 | GET/POST | `/register` | Registration form / create user | No |
-| GET/POST | `/login` | Login form / authenticate | No |
+| GET/POST | `/login` | Login form / authenticate with email and password | No |
 | GET | `/logout` | End session and logout | No |
+| GET | `/auth/github/login` | Redirect to GitHub OAuth (requires `.env`) | No |
+| GET | `/auth/github/callback` | GitHub OAuth callback (requires `.env`) | No |
 | GET/POST | `/create-post` | Create a new post | Yes |
 | GET | `/post?id=1` | View a single post with comments | No |
 | POST | `/comment/create` | Add a comment to a post | Yes |
@@ -99,6 +137,7 @@ The SQLite database is created inside the container at `/app/forum.db`.
 | POST | `/dislike` | Dislike a post | Yes |
 | POST | `/comment/like` | Like a comment | Yes |
 | POST | `/comment/dislike` | Dislike a comment | Yes |
+| GET | `/static/*` | CSS and static assets | No |
 
 ## Database
 
@@ -110,8 +149,9 @@ Useful commands:
 
 ```bash
 sqlite3 forum.db ".tables"
-sqlite3 forum.db "SELECT username, email FROM users;"
-sqlite3 forum.db "SELECT id, title FROM posts;"
+sqlite3 forum.db "SELECT * FROM users;"
+sqlite3 forum.db "SELECT * FROM posts;"
+sqlite3 forum.db "SELECT * FROM comments;"
 sqlite3 forum.db "SELECT p.title, c.name FROM posts p JOIN post_categories pc ON p.id = pc.post_id JOIN categories c ON c.id = pc.category_id;"
 ```
 
@@ -120,8 +160,9 @@ sqlite3 forum.db "SELECT p.title, c.name FROM posts p JOIN post_categories pc ON
 ```
 forum/
 ├── cmd/server/          # Application entry point
-├── Dockerfile         # Container image build
-├── docker-compose.yml # Run forum with Docker Compose
+├── Dockerfile           # Container image build
+├── docker-compose.yml   # Run forum with Docker Compose
+├── .env.example         # GitHub OAuth template (copy to .env locally)
 ├── internal/
 │   ├── auth/            # Cookie and session helpers
 │   ├── database/        # SQLite connection and migrations
@@ -139,9 +180,11 @@ forum/
 - [go-sqlite3](https://github.com/mattn/go-sqlite3) — SQLite driver
 - [golang.org/x/crypto/bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt) — Password hashing
 - [google/uuid](https://github.com/google/uuid) — Session tokens
+- [golang.org/x/oauth2](https://pkg.go.dev/golang.org/x/oauth2) — GitHub OAuth (optional)
+- [godotenv](https://github.com/joho/godotenv) — Load `.env` file locally
 
 ## Git Workflow
 
 See [WORKFLOW.md](WORKFLOW.md) for branch naming, pull request process, and phase ownership.
 
-**Do not commit:** `forum.db` (local database), build binaries, or personal notes.
+**Do not commit:** `forum.db` (local database), `.env`, build binaries, or personal notes.

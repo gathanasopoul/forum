@@ -22,5 +22,9 @@ func RunMigrations(db *sql.DB) error {
 	_, _ = db.Exec("ALTER TABLE users ADD COLUMN oauth_provider TEXT;")
 	_, _ = db.Exec("ALTER TABLE users ADD COLUMN oauth_id TEXT;")
 
+	// Fix NULL values for existing users so row.Scan into string doesn't fail
+	_, _ = db.Exec("UPDATE users SET oauth_provider = '' WHERE oauth_provider IS NULL;")
+	_, _ = db.Exec("UPDATE users SET oauth_id = '' WHERE oauth_id IS NULL;")
+
 	return nil
 }

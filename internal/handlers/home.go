@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -75,6 +76,7 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	existing, err := services.GetUserByUsername(h.DB, username)
 	if err != nil {
+		log.Printf("Register GetUserByUsername error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
@@ -84,6 +86,7 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	existing, err = services.GetUserByEmail(h.DB, email)
 	if err != nil {
+		log.Printf("Register GetUserByEmail error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
@@ -98,6 +101,7 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Printf("Register bcrypt error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
@@ -109,6 +113,7 @@ func (h *Handlers) handleRegisterPost(w http.ResponseWriter, r *http.Request) {
 	}
 	err = services.CreateUser(h.DB, user)
 	if err != nil {
+		log.Printf("Register CreateUser error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}

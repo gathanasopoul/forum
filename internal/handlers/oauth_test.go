@@ -53,3 +53,34 @@ func TestOAuthLoginInvalidProvider(t *testing.T) {
 		t.Errorf("status = %d, want %d", rec.Code, http.StatusBadRequest)
 	}
 }
+
+func TestOAuthCallbackInvalidState(t *testing.T) {
+	InitOAuth()
+	h := New(setupHandlerTestDB(t))
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/github/callback?state=invalid", nil)
+	rec := httptest.NewRecorder()
+
+	h.OAuthCallback(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusBadRequest)
+	}
+}
+
+func TestOAuthCallbackInvalidProvider(t *testing.T) {
+	InitOAuth()
+	h := New(setupHandlerTestDB(t))
+
+	// Provide a matching state to bypass the state check, so we can reach the provider check
+	state := "teststate"
+	req := httptest.NewRequest(http.MethodGet, "/auth/invalid/callback?state="+state, nil)
+	req.AddCookie(&http.Cookie{Name: "oauthstate", Value: state})
+	rec := httptest.NewRecorder()
+
+	h.OAuthCallback(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("status = %d, want %d", rec.Code, http.StatusBadRequest)
+	}
+}

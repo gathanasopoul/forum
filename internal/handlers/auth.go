@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -44,6 +45,7 @@ func (h *Handlers) handleLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	user, err := services.GetUserByEmail(h.DB, email)
 	if err != nil {
+		log.Printf("Login GetUserByEmail error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
@@ -60,6 +62,7 @@ func (h *Handlers) handleLoginPost(w http.ResponseWriter, r *http.Request) {
 
 	token, err := services.CreateSession(h.DB, user.ID)
 	if err != nil {
+		log.Printf("Login CreateSession error: %v", err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}

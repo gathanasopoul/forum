@@ -161,6 +161,4 @@ forum/
 - [golang.org/x/oauth2](https://pkg.go.dev/golang.org/x/oauth2) — GitHub OAuth (optional)
 - [godotenv](https://github.com/joho/godotenv) — Load `.env` file locally
 
-## Git Workflow
 
-**Do not commit:** `forum.db` (local database), `.env`, build binaries, or personal notes.

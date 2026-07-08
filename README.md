@@ -8,27 +8,6 @@ A web forum built with Go and SQLite for the Zone01 Athens project.
 - Giorgos Salaounis
 - Giannis Athanasopoulos
 
-## Current Status
-
-### Done
-
-- HTTP server with SQLite connection and database initialization
-- User registration (email, username, password) with duplicate validation
-- Password hashing with bcrypt and UUID session tokens
-- User login, logout, and session cookies (24h expiration)
-- Posts with categories (create, list, single post view)
-- Comments (create and display)
-- Likes and dislikes on posts and comments
-- Post filtering by category, created posts, and liked posts
-- Responsive UI with light/dark theme and static assets
-- Docker setup (Dockerfile, docker-compose.yml)
-- Database schema for all forum entities
-- Unit tests for auth, posts, comments, and filters
-
-### In Progress / TODO
-
-- GitHub OAuth (optional sign-in; requires `.env` credentials)
-- Unit tests (broader coverage)
 
 ## Requirements
 
@@ -171,7 +150,6 @@ forum/
 │   └── services/        # Database business logic
 ├── templates/           # HTML templates
 ├── static/              # CSS and JavaScript assets
-├── WORKFLOW.md          # Team git workflow and development phases
 └── README.md
 ```
 
@@ -184,7 +162,5 @@ forum/
 - [godotenv](https://github.com/joho/godotenv) — Load `.env` file locally
 
 ## Git Workflow
-
-See [WORKFLOW.md](WORKFLOW.md) for branch naming, pull request process, and phase ownership.
 
 **Do not commit:** `forum.db` (local database), `.env`, build binaries, or personal notes.

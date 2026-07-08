@@ -1,0 +1,29 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25.3' # Matching the version in your README
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Build Server
+      run: go build -v ./cmd/server
+
+    - name: Run Unit Tests
+      run: go test -v ./...

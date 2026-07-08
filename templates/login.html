@@ -5,9 +5,15 @@
         <p class="form-subtitle">Login to your account to join the discussions</p>
 
         <form action="/login" method="POST" class="auth-form">
+            {{if .Form.Error}}
+            <div class="error-msg" style="margin-bottom: 1rem; text-align: center; color: var(--danger-color);">
+                <i class="fa-solid fa-triangle-exclamation"></i> {{.Form.Error}}
+            </div>
+            {{end}}
+            
             <div class="form-group">
                 <label for="email"><i class="fa-regular fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required autofocus>
+                <input type="email" id="email" name="email" placeholder="Enter your email" value="{{.Form.Email}}" required autofocus>
             </div>
 
             <div class="form-group">

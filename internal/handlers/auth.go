@@ -11,6 +11,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// loginPageData holds form values and validation errors for the login template.
+type loginPageData struct {
+	Email string
+	Error string
+}
+
+// renderLoginPage renders the login template with the given data and status code.
+func (h *Handlers) renderLoginPage(w http.ResponseWriter, data loginPageData, status int) {
+	tmpl, err := parseTemplateWithBase("login.html", nil)
+	if err != nil {
+		http.Error(w, "Template Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(status)
+	tmpl.ExecuteTemplate(w, "base", map[string]interface{}{
+		"UserID": 0,
+		"Form":   data,
+	})
+}
+
 // LoginPage handles GET and POST requests to /login.
 // GET shows the login form, POST authenticates the user.
 func (h *Handlers) LoginPage(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +40,7 @@ func (h *Handlers) LoginPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := parseTemplateWithBase("login.html", nil)
-	if err != nil {
-		http.Error(w, "Template Error", http.StatusInternalServerError)
-		return
-	}
-	tmpl.ExecuteTemplate(w, "base", nil)
+	h.renderLoginPage(w, loginPageData{}, http.StatusOK)
 }
 
 // handleLoginPost processes the login form submission.
@@ -34,12 +50,11 @@ func (h *Handlers) handleLoginPost(w http.ResponseWriter, r *http.Request) {
 	email := strings.TrimSpace(r.FormValue("email"))
 	password := r.FormValue("password")
 
-	if email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
-		return
-	}
-	if password == "" {
-		http.Error(w, "Password is required", http.StatusBadRequest)
+	if email == "" || password == "" {
+		h.renderLoginPage(w, loginPageData{
+			Email: email,
+			Error: "Email and Password are required",
+		}, http.StatusBadRequest)
 		return
 	}
 
@@ -50,13 +65,19 @@ func (h *Handlers) handleLoginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user == nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		h.renderLoginPage(w, loginPageData{
+			Email: email,
+			Error: "Invalid credentials",
+		}, http.StatusUnauthorized)
 		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		h.renderLoginPage(w, loginPageData{
+			Email: email,
+			Error: "Invalid credentials",
+		}, http.StatusUnauthorized)
 		return
 	}
 

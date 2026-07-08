@@ -157,7 +157,7 @@ func TestLoginPostEmptyPassword(t *testing.T) {
 	if rec.Code != http.StatusBadRequest {
 		t.Errorf("status = %d, want %d", rec.Code, http.StatusBadRequest)
 	}
-	if !strings.Contains(rec.Body.String(), "Password is required") {
+	if !strings.Contains(rec.Body.String(), "Email and Password are required") {
 		t.Errorf("body = %q, want password required message", rec.Body.String())
 	}
 }
